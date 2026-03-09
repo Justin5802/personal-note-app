@@ -19,7 +19,8 @@ exports.handler = async (event) => {
       headers: {
         "Access-Control-Allow-Origin": "*",
         "Access-Control-Allow-Headers": "Content-Type",
-        "Access-Control-Allow-Methods": "OPTIONS,POST,GET,DELETE"
+        "Access-Control-Allow-Methods": "OPTIONS,POST,GET,DELETE",
+        "Access-Control-Allow-Credentials": true
       },
       body: JSON.stringify({ success: true })
     };
@@ -30,7 +31,8 @@ exports.handler = async (event) => {
       headers: {
         "Access-Control-Allow-Origin": "*",
         "Access-Control-Allow-Headers": "Content-Type",
-        "Access-Control-Allow-Methods": "OPTIONS,POST,GET,DELETE"
+        "Access-Control-Allow-Methods": "OPTIONS,POST,GET,DELETE",
+        "Access-Control-Allow-Credentials": true
       },
       body: JSON.stringify({ error: "Failed to delete note" })
     };

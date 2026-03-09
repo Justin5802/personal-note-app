@@ -8,7 +8,7 @@ function App() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  const API_URL = 'https://ieywp955r7.execute-api.us-east-1.amazonaws.com/Prod/';
+ const API_URL = 'https://ieywp955r7.execute-api.us-east-1.amazonaws.com/Prod';
 
   useEffect(() => {
     fetchNotes();
@@ -57,24 +57,52 @@ function App() {
   };
 
   const deleteNote = async (noteId) => {
-    setLoading(true);
-    try {
-      const response = await fetch(`${API_URL}/notes/${noteId}`, {
-        method: 'DELETE'
-      });
-      
-      const data = await response.json();
-      if (data.success) {
-        setNotes(notes.filter(note => note.noteId !== noteId));
+  setLoading(true);
+  setError(''); 
+  
+  console.log("🗑️ Attempting to delete note:", noteId);
+  console.log("📡 Full URL:", `${API_URL}/notes/${noteId}`);
+  
+  try {
+    const response = await fetch(`${API_URL}/notes/${noteId}`, {
+      method: 'DELETE',
+      mode: 'cors',
+      credentials: 'omit',
+      headers: {
+        'Content-Type': 'application/json',
+        'Cache-Control': 'no-cache'
       }
-    } catch (err) {
-      setError('Failed to delete note');
-      console.error(err);
-    } finally {
-      setLoading(false);
+    });
+    
+    console.log("📊 Response status:", response.status);
+    console.log("📋 Response headers:", Object.fromEntries([...response.headers]));
+    
+    const responseText = await response.text();
+    console.log("📄 Response text:", responseText);
+    
+    let data;
+    try {
+      data = JSON.parse(responseText);
+      console.log("✅ Parsed JSON:", data);
+    } catch (e) {
+      console.log("❌ Response is not JSON:", e);
+      data = { success: false };
     }
-  };
-
+    
+    if (response.ok && data.success) {
+      console.log("✅ Delete successful, updating UI");
+      setNotes(notes.filter(note => note.noteId !== noteId));
+    } else {
+      console.log("❌ Delete failed:", data);
+      setError(`Delete failed: ${response.status} - ${responseText}`);
+    }
+  } catch (err) {
+    console.error("🔥 Network or other error:", err);
+    setError('Failed to delete note: ' + err.message);
+  } finally {
+    setLoading(false);
+  }
+};
   return (
     <div className="app">
       <header className="app-header">
